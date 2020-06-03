@@ -30,7 +30,6 @@ import Network.BSD
 import Network.Socket
 import qualified Network.TCPInfo as T (accept)
 import Network.TCPInfo hiding (accept)
-import Prelude hiding (catch)
 import System.Exit
 import System.IO
 import System.Posix.Process
@@ -129,7 +128,7 @@ stay sDispatch cnf = do
     writePidFile cnf
     setGroupUser cnf
     runServer (sDispatch s) cnf
-    sClose s
+    close s
   where
     port = portName cnf
     addr = ipAddr cnf
@@ -164,7 +163,7 @@ doPrefork sDispatch cnf = do
     writePidFile cnf
     setGroupUser cnf
     cids <- fork (sDispatch s)
-    sClose s
+    close s
     return cids
   where
     port = portName cnf
@@ -215,7 +214,7 @@ dispatchS :: C10kServer -> Socket -> Dispatch
 dispatchS srv sock inc dec = do
     (connsock,_) <- accept sock
     inc
-    forkIO $ srv connsock `finally` (dec >> sClose connsock)
+    forkIO $ srv connsock `finally` (dec >> close connsock)
     return ()
 
 dispatchH :: C10kServerH -> Socket -> Dispatch
@@ -250,6 +249,6 @@ listenTo maddr serv = do
         addr = if null addrs' then head addrs else head addrs'
     sock <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
     setSocketOption sock ReuseAddr 1
-    bindSocket sock (addrAddress addr)
+    bind sock (addrAddress addr)
     listen sock maxListenQueue
     return sock

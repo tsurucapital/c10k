@@ -25,7 +25,7 @@ Library
     GHC-Options:        -Wall
   Exposed-Modules:      Network.C10kServer
                         Network.TCPInfo
-  Build-Depends:        base >= 4 && < 5, network, unix, network-bsd
+  Build-Depends:        base >= 4 && < 5, network == 3.1.0.1, unix, network-bsd
 Source-Repository head
   Type:                 git
   Location:             git://github.com/kazu-yamamoto/c10k.git
